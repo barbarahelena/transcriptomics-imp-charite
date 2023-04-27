@@ -1,6 +1,7 @@
 # Pathway analysis
 
 # libraries
+library(tidyverse)
 library(gage)
 library(DESeq2)
 library(AnnotationDbi)
@@ -24,11 +25,11 @@ go.mf.gs <- go.hs$go.sets[go.hs$go.subs$MF] # molecular function
 go.cc.gs <- go.hs$go.sets[go.hs$go.subs$CC] # cellular component
 
 # annotate the deseq2 results with additional gene identifiers
-deg$symbol <- mapIds(EnsDb.Hsapiens.v86, keys=deseq2Results$ENSEMBL,
+deg$symbol <- mapIds(EnsDb.Hsapiens.v86, keys=deg$ENSEMBL,
                      column="SYMBOL", keytype="GENEID", multiVals="first")
-deg$entrez <- mapIds(EnsDb.Hsapiens.v86, keys=deseq2Results$ENSEMBL,
+deg$entrez <- mapIds(EnsDb.Hsapiens.v86, keys=deg$ENSEMBL,
                      column="ENTREZID", keytype="GENEID", multiVals="first")
-deg$name <- mapIds(EnsDb.Hsapiens.v86, keys=deseq2Results$ENSEMBL,
+deg$name <- mapIds(EnsDb.Hsapiens.v86, keys=deg$ENSEMBL,
                    column="GENENAME", keytype="GENEID", multiVals="first")
 
 # grab the log fold changes for everything
@@ -42,7 +43,7 @@ fc.go.bp.p <- gage(foldchanges, gsets = go.bp.gs)
 fc.go.mf.p <- gage(foldchanges, gsets = go.mf.gs)
 fc.go.cc.p <- gage(foldchanges, gsets = go.cc.gs)
 
-# covert the kegg results to data frames
+# convert the kegg results to data frames
 fc.kegg.sigmet.p.up <- as.data.frame(fc.kegg.sigmet.p$greater)
 fc.kegg.dise.p.up <- as.data.frame(fc.kegg.dise.p$greater)
 
@@ -65,6 +66,8 @@ any(fc.go.cc.p.down$q.val < 0.05)
 any(fc.go.cc.p.up$q.val < 0.05)
 any(fc.go.mf.p.down$q.val < 0.05)
 any(fc.go.mf.p.up$q.val < 0.05)
+
+# NO SIGNIFICANT PATHWAYS AFTER FDR
 
 kegg_a <- fc.kegg.sigmet.p.up %>% 
     arrange(p.val) %>% 
@@ -126,7 +129,7 @@ pld <- ggplot(kegg_d, aes(x = pathway, y = p.val)) +
     theme(legend.position = 'none', legend.justification = 'center')
 
 ggpubr::ggarrange(plc, pld)
-ggsave("kegg_diseasepathways.pdf", width = 13, height = 5)
+ggsave("results/kegg/kegg_diseasepathways.pdf", width = 13, height = 5)
 
 pla <- ggplot(kegg_b, aes(x = pathway, y = p.val)) +
     theme_Publication() +
@@ -153,7 +156,7 @@ plb <- ggplot(kegg_a, aes(x = pathway, y = p.val)) +
     theme(legend.position = 'none', legend.justification = 'center')
 
 ggpubr::ggarrange(pla, plb)
-ggsave("kegg_sigmet.pdf", width = 13, height = 5)
+ggsave("results/kegg/kegg_sigmet.pdf", width = 13, height = 5)
 
 # Overlay the expression data onto this pathway
 pathview(gene.data=foldchanges, species="hsa", pathway.id="hsa04613")
