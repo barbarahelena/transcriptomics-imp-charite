@@ -11,13 +11,26 @@ library(stringr)
 # install.packages("locfit")
 # BiocManager::install(c("gage","GO.db","AnnotationDbi","org.Hs.eg.db"))
 
+## Check summary stats
+summarystats <- read.csv('data/star/summary_mapping_stats.csv')
+summarystats
+head(summarystats)
+sampleno <- nrow(summarystats)
+print(str_c("Mean total reads for ", sampleno, " samples was: ", format(mean(summarystats$Total.Reads), 10), 
+            " with an SD of: ", format(sd(summarystats$Total.Reads), 10), " of which ", 
+            format((mean(summarystats$Total.Mapped.Reads)/mean(summarystats$Total.Reads)) * 100, 1),
+            "% were mapped."
+            ))
+
 ## Open raw count file
-rawCounts <- read.csv('DEG/deseq2/Ctrl-vs-Treatment/counts/raw_counts.csv')
+rawCounts <- read.csv('data/DEG/deseq2/Ctrl-vs-Treatment/counts/raw_counts.csv')
 rawCounts$Gene.ID <- rawCounts$X
 rawCounts$X <- NULL
+print(str_c("Mean total counts for ", sampleno, " samples was: ", mean(colSums(rawCounts[,-1])), 
+            " with an SD of: ", sd(colSums(rawCounts[,-1]))))
 
 ## Open sample mapping
-sampleData <- read.delim("DEG/deseq2/Ctrl-vs-Treatment/testCondition.txt")
+sampleData <- read.delim("data/DEG/deseq2/Ctrl-vs-Treatment/testCondition.txt")
 sampleData$batch <- NULL
 sampleData <- sampleData %>% mutate(SampleName = str_remove(str_remove(SampleID, "12h-"), "100-nM-"),
                                     condition = forcats::fct_recode(condition,
@@ -56,10 +69,21 @@ deseq2Data <- deseq2Data[rowSums(counts(deseq2Data)) > 5, ]
 deseq2Data <- DESeq(deseq2Data)
 
 # Extract differential expression results
-deseq2Results <- results(deseq2Data, contrast=c("condition", "ImP", "Control"))
+deseq2Results <- results(deseq2Data, contrast=c("condition", "ImP", "Control"),
+                         alpha = 0.1)
 deseq2Results$ENSEMBL <- rownames(deseq2Results)
 
 summary(deseq2Results)
+
+# out of 20375 with nonzero total read count
+# adjusted p-value < 0.1
+# LFC > 0 (up)       : 18, 0.088%
+# LFC < 0 (down)     : 34, 0.17%
+# outliers [1]       : 0, 0%
+# low counts [2]     : 16196, 79%
+# (mean count < 1260)
+# [1] see 'cooksCutoff' argument of ?results
+# [2] see 'independentFiltering' argument of ?results
 
 plotMA(deseq2Results)
 
@@ -82,5 +106,6 @@ deseq2Results <- dplyr::right_join(counts, as.data.frame(deseq2Results), by = "E
 # Save files
 # DESeq2 results object
 head(deseq2Results)
-write.csv2(deseq2Results, "data/220905_deseq2results.csv")
+deseq2Results %>% filter(padj < 0.1)
+write.csv2(deseq2Results, "data/230427_deseq2results.csv")
 head(deseq2Results)
