@@ -201,9 +201,9 @@ for(a in 1:nrow(df2)){
         scale_fill_manual(guide = "none", values = c("white",ggsci::pal_lancet()(2)[2])) +
         labs(title=paste0(genename), y="Normalized counts", x = "") +
         theme_Publication())
-    ggsave(str_c("results/pdf/", genename, ".pdf"), width = 3, height = 4, device = "pdf")
-    ggsave(str_c("results/svg/", genename, ".svg"), width = 3, height = 4, device = "svg")
-    ggsave(str_c("results/png/", genename, ".png"), width = 3, height = 4, device = "png")
+    ggsave(str_c("results/pdf/", genename, ".pdf"), width = 3, height = 5, device = "pdf")
+    ggsave(str_c("results/svg/", genename, ".svg"), width = 3, height = 5, device = "svg")
+    ggsave(str_c("results/png/", genename, ".png"), width = 3, height = 5, device = "png")
     res[[a]] <- pl
 }
 
@@ -252,9 +252,9 @@ for(a in 1:nrow(df3)){
             scale_fill_manual(guide = "none", values = c("white",ggsci::pal_lancet()(2)[2])) +
             labs(title=paste0(genename), y="Normalized counts", x = "") +
             theme_Publication())
-    ggsave(str_c("results/pdf/", genename, ".pdf"), width = 3, height = 4, device = "pdf")
-    ggsave(str_c("results/svg/", genename, ".svg"), width = 3, height = 4, device = "svg")
-    ggsave(str_c("results/png/", genename, ".png"), width = 3, height = 4, device = "png")
+    ggsave(str_c("results/pdf/", genename, ".pdf"), width = 3, height = 5, device = "pdf")
+    ggsave(str_c("results/svg/", genename, ".svg"), width = 3, height = 5, device = "svg")
+    ggsave(str_c("results/png/", genename, ".png"), width = 3, height = 5, device = "png")
     res2[[a]] <- pl
 }
 
