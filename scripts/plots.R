@@ -295,7 +295,8 @@ df <- df %>%
             Gene.name == "CALCRL" ~ paste0(Gene.name),
             Gene.name == "ANGPTL4" ~ paste0(Gene.name)
         )
-    )
+    ) %>% 
+    arrange(padj2)
 
 set.seed(1234)
 ggplot(df, aes(x = log2FoldChange, y = -log10(padj), color = group, label = delabel)) +
@@ -303,29 +304,31 @@ ggplot(df, aes(x = log2FoldChange, y = -log10(padj), color = group, label = dela
     geom_hline(aes(yintercept = -log10(0.1)), color = "darkgrey", linetype = "dashed") +
     geom_point(alpha = 0.6) +
     geom_text_repel(size = 3, seed = 24, box.padding = 1.5, min.segment.length = 0,
-                    point.padding = 0, color = "black", fontface = "bold", force_pull = 0,
+                    point.padding = 0, color = c(rep("black", 35), ggsci::pal_lancet()(2)[2], rep("black", 20339)),
+                    fontface = "bold", force_pull = 0,
                     nudge_x = 0.05, nudge_y = 0.5, segment.color = "grey50", 
                     force = 1, max.overlaps = 10) +
     scale_color_manual(values = c(ggsci::pal_lancet()(2)), guide = "none") +
     scale_x_continuous(limits = c(-0.6, 0.6)) +
     labs(x = "Log2 fold change with ImP",
          y = "-log10(p-value)") 
-ggsave("results/pdf/230320_volcanoplot_adjpval.pdf", width = 5, height = 5, device = "pdf")    
-ggsave("results/svg/230320_volcanoplot_adjpval.svg", width = 5, height = 5, device = "svg")
-ggsave("results/png/230320_volcanoplot_adjpval.png", width = 5, height = 5, device = "png") 
+ggsave("results/pdf/230427_volcanoplot_adjpval.pdf", width = 5, height = 5, device = "pdf")    
+ggsave("results/svg/230427_volcanoplot_adjpval.svg", width = 5, height = 5, device = "svg")
+ggsave("results/png/230427_volcanoplot_adjpval.png", width = 5, height = 5, device = "png") 
 
-seed(1234)
+set.seed(1234)
 ggplot(df, aes(x = log2FoldChange, y = -log10(padj), color = group, label = delabel)) +
     theme_Publication() +
     geom_point(alpha = 0.6) +
     geom_text_repel(size = 3, seed = 24, box.padding = 1.5, min.segment.length = 0,
-                    point.padding = 0, color = "black", fontface = "bold", force_pull = 0,
+                    point.padding = 0, fontface = "bold", force_pull = 0,
                     nudge_x = 0.05, nudge_y = 0.5, segment.color = "grey50", 
-                    force = 1, max.overlaps = 10) +
+                    force = 1, max.overlaps = 10, 
+                    color = c(rep("black", 35), ggsci::pal_lancet()(2)[2], rep("black", 20339))) +
     scale_color_manual(values = c(ggsci::pal_lancet()(2)), guide = "none") +
     scale_x_continuous(limits = c(-0.6, 0.6)) +
     labs(x = "Log2 fold change with ImP",
          y = "-log10(p-value)")
-ggsave("results/pdf/230320_volcanoplot_noline.pdf", width = 5, height = 5, device = "pdf")    
-ggsave("results/svg/230320_volcanoplot_noline.svg", width = 5, height = 5, device = "svg")
-ggsave("results/png/230320_volcanoplot_noline.png", width = 5, height = 5, device = "png") 
+ggsave("results/pdf/230427_volcanoplot_noline.pdf", width = 5, height = 5, device = "pdf")    
+ggsave("results/svg/230427_volcanoplot_noline.svg", width = 5, height = 5, device = "svg")
+ggsave("results/png/230427_volcanoplot_noline.png", width = 5, height = 5, device = "png") 
